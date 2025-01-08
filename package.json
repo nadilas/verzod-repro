@@ -1,0 +1,20 @@
+{
+  "name": "verzod-repro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "tsx index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tsx": "^4.19.2",
+    "verzod": "^0.2.3",
+    "zodex": "^0.18.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "zod": "^3.24.1"
+  }
+}
