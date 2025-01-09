@@ -3,9 +3,9 @@ import {
   defineVersion,
   entityReference,
   InferredEntity,
-} from 'verzod';
-import { z } from 'zod';
-import { zerialize } from 'zodex';
+} from "verzod";
+import { z } from "zod";
+import { zerialize } from "zodex";
 
 const getVersionFn = (data: unknown) => {
   return typeof data === "object" &&
@@ -32,11 +32,15 @@ const b = createVersionedEntity({
   getVersion: getVersionFn,
 });
 
-const LazyUnion = z.lazy(() =>
-  z.union([entityReference(template), entityReference(b)])
-);
+const LazyUnion = z.lazy(() => {
+  return z.union([entityReference(template), entityReference(b)]);
+});
 
 type LazyUnion = z.infer<typeof LazyUnion>;
+
+interface template_base {
+  id: string;
+}
 
 type template_v1 = template_base & {
   v: 1;
@@ -51,10 +55,6 @@ const template_v1: z.ZodType<template_v1> = z.object({
   objects: z.array(LazyUnion),
 });
 
-interface template_base {
-  id: string;
-}
-
 const template = createVersionedEntity({
   latestVersion: 1,
   versionMap: {
@@ -65,6 +65,8 @@ const template = createVersionedEntity({
   },
   getVersion: getVersionFn,
 });
+
+type template = InferredEntity<typeof template>;
 
 const versioned_request_v1 = z.object({
   v: z.literal(1),
@@ -100,10 +102,20 @@ const v = {
         id: "1",
       },
       {
-        v: 2,
+        v: 1,
         id: "2",
         date: new Date(),
-        objects: [],
+        objects: [
+          {
+            v: 1,
+            id: "3",
+            objects: [],
+          },
+          {
+            v: 1,
+            id: "5",
+          },
+        ],
       },
     ],
   },
@@ -115,7 +127,4 @@ console.log(zerialize(entityReference(versioned_request)));
 const parsed = versioned_request.safeParse(v);
 console.log("parsed?");
 console.log(parsed);
-
-const t_parsed = template.safeParse(v.template);
-console.log("direct parse of template?");
-console.log(t_parsed);
+console.log(JSON.stringify(parsed, null, 2));
